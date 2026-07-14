@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -12,6 +13,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.syrupstudios.plushiefriends.util.PlushieNbtHelper;
 import net.syrupstudios.plushiefriends.util.PlushieProfileManager;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class DynamicPlushieBlockEntity extends BlockEntity {
     public static BlockEntityType<DynamicPlushieBlockEntity> TYPE;
@@ -37,6 +40,28 @@ public class DynamicPlushieBlockEntity extends BlockEntity {
     @Nullable
     public GameProfile getOwner() {
         return this.owner;
+    }
+
+    public boolean applyItemData(CompoundTag itemTag) {
+        boolean updated = false;
+        GameProfile itemOwner = PlushieNbtHelper.getOwnerFromRoot(itemTag);
+        if (itemOwner != null) {
+            this.owner = itemOwner;
+            updated = true;
+        }
+
+        if (PlushieNbtHelper.hasLoreInRoot(itemTag)) {
+            List<String> itemLore = PlushieNbtHelper.getLoreFromRoot(itemTag);
+            this.lore = new ListTag();
+            for (String line : itemLore) {
+                this.lore.add(StringTag.valueOf(line));
+            }
+            updated = true;
+        }
+        if (updated) {
+            this.setChanged();
+        }
+        return updated;
     }
 
     @Override

@@ -32,19 +32,19 @@ public class SetPlushieFunction extends LootItemConditionalFunction {
     protected ItemStack run(ItemStack stack, LootContext context) {
         PlushieDataManager.PlushieDefinition def = PlushieDataManager.get(this.plushieId);
         if (def != null) {
-            CompoundTag blockEntityTag = stack.getOrCreateTagElement(PlushieNbtHelper.BLOCK_ENTITY_TAG);
+            CompoundTag itemTag = stack.getOrCreateTag();
 
             if (!def.ownerName().isEmpty()) {
                 GameProfile profile = PlushieDataManager.getResolvedProfile(def.ownerName(), context.getLevel().getServer());
                 if (profile != null) {
-                    PlushieNbtHelper.writeOwnerToBlockEntityTag(blockEntityTag, profile);
+                    PlushieNbtHelper.writeOwnerToBlockEntityTag(itemTag, profile);
                 } else {
-                    PlushieNbtHelper.writeOwnerStringToBlockEntityTag(blockEntityTag, def.ownerName());
+                    PlushieNbtHelper.writeOwnerStringToBlockEntityTag(itemTag, def.ownerName());
                 }
             }
 
             if (!def.lore().isEmpty()) {
-                PlushieNbtHelper.writeLoreToBlockEntityTag(blockEntityTag, def.lore());
+                PlushieNbtHelper.writeLoreToBlockEntityTag(itemTag, def.lore());
             }
         }
         return stack;

@@ -49,6 +49,7 @@ public class PlushieFriends implements ModInitializer {
 		@Override
 		protected boolean updateCustomBlockEntityTag(BlockPos pos, Level level, @Nullable Player player, ItemStack stack, BlockState state) {
 			boolean updated = super.updateCustomBlockEntityTag(pos, level, player, stack, state);
+			updated |= applyRootItemData(level, pos, stack);
 			applyCachedOwner(level, pos, state);
 			return updated;
 		}
@@ -67,15 +68,13 @@ public class PlushieFriends implements ModInitializer {
 
 			if (stack.hasTag()) {
 				CompoundTag tag = stack.getTag();
-				if (tag != null && tag.contains(PlushieNbtHelper.BLOCK_ENTITY_TAG, PlushieNbtHelper.TAG_COMPOUND)) {
-					CompoundTag blockEntityTag = tag.getCompound(PlushieNbtHelper.BLOCK_ENTITY_TAG);
-
-					String ownerName = PlushieNbtHelper.getOwnerNameFromBlockEntityTag(blockEntityTag);
+				if (tag != null) {
+					String ownerName = PlushieNbtHelper.getOwnerNameFromRoot(tag);
 					if (!ownerName.isEmpty()) {
 						tooltip.add(Component.literal(ownerName).withStyle(ChatFormatting.AQUA));
 					}
 
-					List<String> lore = PlushieNbtHelper.getLoreFromBlockEntityTag(blockEntityTag);
+					List<String> lore = PlushieNbtHelper.getLoreFromRoot(tag);
 					for (String line : lore) {
 						tooltip.add(Component.literal(line).withStyle(ChatFormatting.GRAY));
 					}
@@ -86,22 +85,17 @@ public class PlushieFriends implements ModInitializer {
 
 	private static void applyCachedOwner(ItemStack stack) {
 		CompoundTag tag = stack.getTag();
-		if (tag == null || !tag.contains(PlushieNbtHelper.BLOCK_ENTITY_TAG, PlushieNbtHelper.TAG_COMPOUND)) {
+		if (tag == null) {
 			return;
 		}
+		PlushieNbtHelper.migrateLegacyItemData(tag);
 
-		CompoundTag blockEntityTag = tag.getCompound(PlushieNbtHelper.BLOCK_ENTITY_TAG);
-		String ownerName = PlushieNbtHelper.getOwnerNameFromBlockEntityTag(blockEntityTag);
-		if (ownerName.isEmpty()) {
+		GameProfile owner = PlushieNbtHelper.getOwnerFromRoot(tag);
+		if (owner == null || owner.getName() == null || owner.getName().isEmpty()
+				|| owner.getProperties().containsKey("textures")) {
 			return;
 		}
-
-		if (blockEntityTag.contains(PlushieNbtHelper.PLUSHIE_OWNER, PlushieNbtHelper.TAG_COMPOUND)) {
-			CompoundTag ownerCompound = blockEntityTag.getCompound(PlushieNbtHelper.PLUSHIE_OWNER);
-			if (ownerCompound.contains("Properties", PlushieNbtHelper.TAG_COMPOUND)) {
-				return;
-			}
-		}
+		String ownerName = owner.getName();
 
 		GameProfile cachedProfile = PlushieProfileManager.getCachedProfile(ownerName);
 		if (cachedProfile == null || !cachedProfile.getProperties().containsKey("textures")) {
@@ -111,7 +105,17 @@ public class PlushieFriends implements ModInitializer {
 			return;
 		}
 
-		PlushieNbtHelper.writeOwnerToBlockEntityTag(blockEntityTag, cachedProfile);
+		PlushieNbtHelper.writeOwnerToBlockEntityTag(tag, cachedProfile);
+	}
+
+	private static boolean applyRootItemData(Level level, BlockPos pos, ItemStack stack) {
+		CompoundTag tag = stack.getTag();
+		BlockEntity blockEntity = level.getBlockEntity(pos);
+		if (tag == null || !(blockEntity instanceof DynamicPlushieBlockEntity plushieBlockEntity)) {
+			return false;
+		}
+
+		return plushieBlockEntity.applyItemData(tag);
 	}
 
 	private static void applyCachedOwner(Level level, BlockPos pos, BlockState state) {

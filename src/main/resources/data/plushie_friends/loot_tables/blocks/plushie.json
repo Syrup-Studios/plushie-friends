@@ -14,12 +14,12 @@
               "ops": [
                 {
                   "source": "PlushieOwner",
-                  "target": "BlockEntityTag.PlushieOwner",
+                  "target": "PlushieOwner",
                   "op": "replace"
                 },
                 {
                   "source": "PlushieLore",
-                  "target": "BlockEntityTag.PlushieLore",
+                  "target": "PlushieLore",
                   "op": "replace"
                 }
               ]

@@ -16,5 +16,5 @@ Either by using a custom datapack, more info [here](https://wiki.thesalad.bar/mo
 or by using commands, you can spawn them in using this command:
 
 ```
-/give @p plushie_friends:plushie{BlockEntityTag:{PlushieOwner:"PLAYER NAME"}}
+/give @p plushie_friends:plushie{PlushieOwner:"PLAYER NAME"}
 ```

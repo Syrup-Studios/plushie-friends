@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +25,16 @@ public final class PlushieNbtHelper {
 
     @Nullable
     public static GameProfile getOwnerFromRoot(CompoundTag rootTag) {
-        if (rootTag == null || !rootTag.contains(BLOCK_ENTITY_TAG, TAG_COMPOUND)) return null;
-        return getOwnerFromBlockEntityTag(rootTag.getCompound(BLOCK_ENTITY_TAG));
+        if (rootTag == null) return null;
+
+        if (rootTag.contains(PLUSHIE_OWNER)) {
+            return getOwnerFromBlockEntityTag(rootTag);
+        }
+
+        if (rootTag.contains(BLOCK_ENTITY_TAG, TAG_COMPOUND)) {
+            return getOwnerFromBlockEntityTag(rootTag.getCompound(BLOCK_ENTITY_TAG));
+        }
+        return null;
     }
 
     @Nullable
@@ -57,6 +66,19 @@ public final class PlushieNbtHelper {
         return "";
     }
 
+    public static String getOwnerNameFromRoot(CompoundTag rootTag) {
+        if (rootTag == null) return "";
+
+        if (rootTag.contains(PLUSHIE_OWNER)) {
+            return getOwnerNameFromBlockEntityTag(rootTag);
+        }
+
+        if (rootTag.contains(BLOCK_ENTITY_TAG, TAG_COMPOUND)) {
+            return getOwnerNameFromBlockEntityTag(rootTag.getCompound(BLOCK_ENTITY_TAG));
+        }
+        return "";
+    }
+
     public static List<String> getLoreFromBlockEntityTag(CompoundTag blockEntityTag) {
         List<String> lore = new ArrayList<>();
         if (blockEntityTag != null && blockEntityTag.contains(PLUSHIE_LORE, TAG_LIST)) {
@@ -66,6 +88,59 @@ public final class PlushieNbtHelper {
             }
         }
         return lore;
+    }
+
+    public static List<String> getLoreFromRoot(CompoundTag rootTag) {
+        if (rootTag == null) return new ArrayList<>();
+
+        if (rootTag.contains(PLUSHIE_LORE, TAG_LIST)) {
+            return getLoreFromBlockEntityTag(rootTag);
+        }
+        if (rootTag.contains(BLOCK_ENTITY_TAG, TAG_COMPOUND)) {
+            return getLoreFromBlockEntityTag(rootTag.getCompound(BLOCK_ENTITY_TAG));
+        }
+        return new ArrayList<>();
+    }
+
+    public static boolean hasLoreInRoot(CompoundTag rootTag) {
+        if (rootTag == null) return false;
+        if (rootTag.contains(PLUSHIE_LORE, TAG_LIST)) return true;
+        return rootTag.contains(BLOCK_ENTITY_TAG, TAG_COMPOUND)
+                && rootTag.getCompound(BLOCK_ENTITY_TAG).contains(PLUSHIE_LORE, TAG_LIST);
+    }
+
+    /**
+     * Moves plushie fields out of the legacy {@code BlockEntityTag} container.
+     * Canonical root fields always win when both representations are present.
+     *
+     * @return {@code true} when legacy plushie data was removed
+     */
+    public static boolean migrateLegacyItemData(CompoundTag rootTag) {
+        if (rootTag == null || !rootTag.contains(BLOCK_ENTITY_TAG, TAG_COMPOUND)) {
+            return false;
+        }
+
+        CompoundTag legacyTag = rootTag.getCompound(BLOCK_ENTITY_TAG);
+        boolean migrated = migrateLegacyField(rootTag, legacyTag, PLUSHIE_OWNER);
+        migrated |= migrateLegacyField(rootTag, legacyTag, PLUSHIE_LORE);
+
+        if (legacyTag.isEmpty()) {
+            rootTag.remove(BLOCK_ENTITY_TAG);
+        }
+        return migrated;
+    }
+
+    private static boolean migrateLegacyField(CompoundTag rootTag, CompoundTag legacyTag, String field) {
+        Tag legacyValue = legacyTag.get(field);
+        if (legacyValue == null) {
+            return false;
+        }
+
+        if (!rootTag.contains(field)) {
+            rootTag.put(field, legacyValue.copy());
+        }
+        legacyTag.remove(field);
+        return true;
     }
 
     public static void writeOwnerToBlockEntityTag(CompoundTag blockEntityTag, GameProfile profile) {
