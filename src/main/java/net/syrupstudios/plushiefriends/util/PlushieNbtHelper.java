@@ -10,9 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class PlushieNbtHelper {
-    public static final String BLOCK_ENTITY_TAG = "BlockEntityTag";
-    public static final String PLUSHIE_OWNER = "PlushieOwner";
-    public static final String PLUSHIE_LORE = "PlushieLore";
+    /** Transitional alias for the legacy item container. */
+    public static final String BLOCK_ENTITY_TAG = PlushieDataContract.LEGACY_BLOCK_ENTITY_TAG;
+    public static final String PLUSHIE_OWNER = PlushieDataContract.OWNER;
+    public static final String PLUSHIE_LORE = PlushieDataContract.LORE;
     public static final String PROFILE_NAME = "Name";
 
     public static final int TAG_STRING = 8;

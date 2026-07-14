@@ -40,8 +40,6 @@ public class PlushieFriendsClient implements ClientModInitializer {
                     GameProfile cached = PlushieProfileManager.getCachedProfile(ownerName);
                     if (cached != null && cached.getProperties().containsKey("textures")) {
                         owner = cached;
-                    } else {
-                        PlushieProfileManager.resolveProfileAsync(ownerName, p -> {});
                     }
                 }
             }

@@ -73,16 +73,35 @@ public class DynamicPlushieBlockEntity extends BlockEntity {
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, DynamicPlushieBlockEntity blockEntity) {
-        if (blockEntity.owner != null && !blockEntity.owner.getProperties().containsKey("textures") && !blockEntity.isResolving) {
+        if (blockEntity.owner == null || blockEntity.owner.getProperties().containsKey("textures")) {
+            return;
+        }
+
+        GameProfile cachedProfile = PlushieProfileManager.getCachedProfile(blockEntity.owner.getName());
+        if (cachedProfile != null && cachedProfile.getProperties().containsKey("textures")) {
+            blockEntity.owner = cachedProfile;
+            blockEntity.setChanged();
+            level.sendBlockUpdated(pos, state, state, 3);
+            return;
+        }
+
+        if (!blockEntity.isResolving && PlushieProfileManager.shouldAttemptResolution(blockEntity.owner.getName())) {
             blockEntity.isResolving = true;
 
             PlushieProfileManager.resolveProfileAsync(blockEntity.owner.getName(), profile -> {
-                if (profile != null) {
-                    blockEntity.owner = profile;
+                Runnable applyResult = () -> {
+                    if (profile != null) {
+                        blockEntity.owner = profile;
+                        blockEntity.setChanged();
+                        level.sendBlockUpdated(pos, state, state, 3);
+                    }
+                    blockEntity.isResolving = false;
+                };
+                if (level.getServer() != null) {
+                    level.getServer().execute(applyResult);
+                } else {
+                    applyResult.run();
                 }
-                blockEntity.isResolving = false;
-                blockEntity.setChanged();
-                level.sendBlockUpdated(pos, state, state, 3);
             });
         }
     }

@@ -46,12 +46,6 @@ public class PlushieFriends implements ModInitializer {
 
 	public static final BlockItem PLUSHIE_ITEM = new BlockItem(PLUSHIE_BLOCK, new FabricItemSettings().stacksTo(1)) {
 		@Override
-		public void verifyTagAfterLoad(CompoundTag tag) {
-			super.verifyTagAfterLoad(tag);
-			resolvePlushieOwner(tag);
-		}
-
-		@Override
 		protected boolean updateCustomBlockEntityTag(BlockPos pos, Level level, @Nullable Player player, ItemStack stack, BlockState state) {
 			boolean updated = super.updateCustomBlockEntityTag(pos, level, player, stack, state);
 			applyCachedOwner(level, pos, state);
@@ -61,7 +55,9 @@ public class PlushieFriends implements ModInitializer {
 		@Override
 		public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
 			super.inventoryTick(stack, level, entity, slotId, isSelected);
-			applyCachedOwner(stack);
+			if (!level.isClientSide) {
+				applyCachedOwner(stack);
+			}
 		}
 
 		@Override
@@ -87,26 +83,6 @@ public class PlushieFriends implements ModInitializer {
 		}
 	};
 
-	private static void resolvePlushieOwner(CompoundTag tag) {
-		if (tag == null || !tag.contains(PlushieNbtHelper.BLOCK_ENTITY_TAG, PlushieNbtHelper.TAG_COMPOUND)) {
-			return;
-		}
-
-		CompoundTag blockEntityTag = tag.getCompound(PlushieNbtHelper.BLOCK_ENTITY_TAG);
-		String ownerName = PlushieNbtHelper.getOwnerNameFromBlockEntityTag(blockEntityTag);
-		if (ownerName.isEmpty()) {
-			return;
-		}
-
-		GameProfile cached = PlushieProfileManager.getCachedProfile(ownerName);
-		if (cached != null) {
-			PlushieNbtHelper.writeOwnerToBlockEntityTag(blockEntityTag, cached);
-			return;
-		}
-
-		PlushieProfileManager.resolveProfileAsync(ownerName, profile -> {});
-	}
-
 	private static void applyCachedOwner(ItemStack stack) {
 		CompoundTag tag = stack.getTag();
 		if (tag == null || !tag.contains(PlushieNbtHelper.BLOCK_ENTITY_TAG, PlushieNbtHelper.TAG_COMPOUND)) {
@@ -128,6 +104,9 @@ public class PlushieFriends implements ModInitializer {
 
 		GameProfile cachedProfile = PlushieProfileManager.getCachedProfile(ownerName);
 		if (cachedProfile == null || !cachedProfile.getProperties().containsKey("textures")) {
+			if (PlushieProfileManager.shouldAttemptResolution(ownerName)) {
+				PlushieProfileManager.resolveProfileAsync(ownerName, profile -> {});
+			}
 			return;
 		}
 

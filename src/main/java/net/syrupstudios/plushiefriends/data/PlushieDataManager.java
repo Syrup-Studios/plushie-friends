@@ -42,7 +42,6 @@ public class PlushieDataManager extends SimpleJsonResourceReloadListener impleme
                 }
 
                 PLUSHIES.put(id, new PlushieDefinition(ownerName, lore));
-                PlushieProfileManager.preloadOwner(ownerName);
             } catch (Exception e) {
                 PlushieFriends.LOGGER.error("Failed to parse plushie data pack entry for {}", id, e);
             }

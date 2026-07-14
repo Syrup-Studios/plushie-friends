@@ -38,10 +38,7 @@ public final class PlushieProfileCache {
 
     private static boolean isSlimSkin(GameProfile profile) {
         for (Property property : profile.getProperties().get("textures")) {
-            Boolean cachedSlim = PlushieProfileManager.getIsSlimCached(property.getValue());
-            if (cachedSlim != null) {
-                return cachedSlim;
-            }
+            return PlushieProfileManager.getOrCacheIsSlim(property.getValue());
         }
         return false;
     }
