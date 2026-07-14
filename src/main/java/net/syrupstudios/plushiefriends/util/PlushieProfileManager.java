@@ -117,6 +117,12 @@ public final class PlushieProfileManager {
                 && !isFailureCoolingDown(cacheKey);
     }
 
+    public static void preloadOwner(String ownerName) {
+        if (shouldAttemptResolution(ownerName)) {
+            resolveProfileAsync(ownerName, profile -> {});
+        }
+    }
+
     public static boolean getOrCacheIsSlim(String textureValue) {
         return SLIM_MODEL_CACHE.computeIfAbsent(textureValue, PlushieProfileManager::decodeSlimModel);
     }

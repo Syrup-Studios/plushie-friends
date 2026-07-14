@@ -57,6 +57,13 @@ public class PlushieDataManager extends SimpleJsonResourceReloadListener impleme
         return PLUSHIES.get(id);
     }
 
+    public static void preloadProfiles() {
+        PLUSHIES.values().stream()
+                .map(PlushieDefinition::ownerName)
+                .distinct()
+                .forEach(PlushieProfileManager::preloadOwner);
+    }
+
     public static GameProfile getResolvedProfile(String ownerName, MinecraftServer server) {
         return PlushieProfileManager.getOrResolveServerProfile(ownerName, server);
     }

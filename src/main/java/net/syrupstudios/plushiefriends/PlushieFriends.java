@@ -3,6 +3,7 @@ package net.syrupstudios.plushiefriends;
 import com.mojang.authlib.GameProfile;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -144,6 +145,13 @@ public class PlushieFriends implements ModInitializer {
 		);
 
 		ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new PlushieDataManager());
+		ServerLifecycleEvents.SERVER_STARTED.register(server -> PlushieDataManager.preloadProfiles());
+		ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {
+			if (success) {
+				PlushieDataManager.preloadProfiles();
+			}
+		});
+		ServerLifecycleEvents.SERVER_STOPPED.register(server -> PlushieProfileManager.clearCache());
 
 		SET_PLUSHIE_FUNCTION = Registry.register(
 				BuiltInRegistries.LOOT_FUNCTION_TYPE,
