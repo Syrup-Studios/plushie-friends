@@ -50,6 +50,8 @@ public class PlushieDataManager extends SimpleJsonResourceReloadListener
                 PlushieFriends.LOGGER.error("Failed to parse plushie data pack entry for {}", id, e);
             }
         });
+
+        PlushieFriends.LOGGER.info("Loaded {} plushie data pack definitions.", PLUSHIES.size());
     }
 
     //? if fabric {
