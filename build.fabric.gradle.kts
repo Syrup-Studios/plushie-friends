@@ -8,7 +8,8 @@ val minecraftVersion = property("deps.minecraft") as String
 version = "${property("mod.version")}+$minecraftVersion"
 base.archivesName = property("mod.id") as String
 
-val requiredJava = JavaVersion.VERSION_17
+val targetJavaVersion = if (stonecutter.eval(stonecutter.current.version, ">=1.20.5")) 21 else 17
+val requiredJava = JavaVersion.toVersion(targetJavaVersion)
 
 repositories {
     fun strictMaven(url: String, alias: String, vararg groups: String) = exclusiveContent {
@@ -47,25 +48,41 @@ java {
 
     toolchain {
         vendor = JvmVendorSpec.ADOPTIUM
-        languageVersion = JavaLanguageVersion.of(requiredJava.majorVersion)
+        languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     }
 }
 
 tasks {
     processResources {
         val props = mapOf(
-            "id" to project.property("mod.id") as String,
-            "name" to project.property("mod.name") as String,
-            "version" to project.property("mod.version") as String,
-            "minecraft" to project.property("mod.mc_compat") as String,
+            "version" to project.version,
+            "mc" to project.property("deps.minecraft"),
+
+            "modName" to project.property("mod.name"),
+            "modId" to project.property("mod.id"),
+            "modDescription" to project.property("mod.description"),
+            "authors" to project.property("mod.authors"),
+            "license" to project.property("mod.license"),
+            "homepage" to project.property("mod.homepage"),
+            "issues" to project.property("mod.issues"),
+            "sources" to project.property("mod.sources"),
+
+            "fl" to project.property("deps.fabric_loader"),
+            "fapi" to project.property("deps.fabric_api"),
         )
 
         inputs.properties(props)
 
         filesMatching("fabric.mod.json") { expand(props) }
 
-        val mixinJava = "JAVA_${requiredJava.majorVersion}"
+        val mixinJava = "JAVA_$targetJavaVersion"
         filesMatching("*.mixins.json") { expand("java" to mixinJava) }
+        exclude("META-INF/neoforge.mods.toml", "META-INF/mods.toml")
+        if (stonecutter.eval(stonecutter.current.version, ">=1.21")) {
+            exclude("data/*/loot_tables/**")
+        } else {
+            exclude("data/*/loot_table/**")
+        }
     }
 
     // Builds the version into a shared folder in `build/libs/${mod version}/`
@@ -76,4 +93,9 @@ tasks {
         into(rootProject.layout.buildDirectory.file("libs/${project.property("mod.version")}"))
         dependsOn("build")
     }
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.encoding = "UTF-8"
+    options.release.set(targetJavaVersion)
 }

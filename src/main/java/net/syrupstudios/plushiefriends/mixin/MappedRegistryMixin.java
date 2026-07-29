@@ -12,14 +12,17 @@ public class MappedRegistryMixin {
 
     private static ResourceLocation remapId(ResourceLocation id) {
         if (id != null && "plushie-friends".equals(id.getNamespace())) {
-            return new ResourceLocation("plushie_friends", id.getPath());
+            return net.syrupstudios.plushiefriends.PlushieFriends.id(id.getPath());
         }
         return id;
     }
 
     private static ResourceKey<?> remapKey(ResourceKey<?> key) {
         if (key != null && "plushie-friends".equals(key.location().getNamespace())) {
-            return ResourceKey.create(ResourceKey.createRegistryKey(key.registry()), new ResourceLocation("plushie_friends", key.location().getPath()));
+            return ResourceKey.create(
+                    ResourceKey.createRegistryKey(key.registry()),
+                    net.syrupstudios.plushiefriends.PlushieFriends.id(key.location().getPath())
+            );
         }
         return key;
     }

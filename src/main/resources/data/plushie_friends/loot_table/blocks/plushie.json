@@ -9,7 +9,7 @@
           "name": "plushie_friends:plushie",
           "functions": [
             {
-              "function": "minecraft:copy_nbt",
+              "function": "minecraft:copy_custom_data",
               "source": "block_entity",
               "ops": [
                 {

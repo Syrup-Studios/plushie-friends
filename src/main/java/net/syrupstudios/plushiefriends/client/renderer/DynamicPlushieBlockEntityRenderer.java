@@ -19,7 +19,7 @@ import net.syrupstudios.plushiefriends.client.PlushieProfileCache;
 
 public class DynamicPlushieBlockEntityRenderer implements BlockEntityRenderer<DynamicPlushieBlockEntity> {
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(
-            new ResourceLocation(PlushieFriends.MOD_ID, "plushie"), "main"
+            PlushieFriends.id("plushie"), "main"
     );
 
     private final PlushieModel model;

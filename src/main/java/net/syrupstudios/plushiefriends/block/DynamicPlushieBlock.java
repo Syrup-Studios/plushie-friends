@@ -1,5 +1,7 @@
 package net.syrupstudios.plushiefriends.block;
 
+//? if >=1.21
+/*import com.mojang.serialization.MapCodec;*/
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -19,40 +21,48 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.syrupstudios.plushiefriends.block.entity.DynamicPlushieBlockEntity;
+import net.syrupstudios.plushiefriends.PlushieFriends;
 import org.jetbrains.annotations.Nullable;
 
 public class DynamicPlushieBlock extends BaseEntityBlock {
+    //? if >=1.21 {
+    /*public static final MapCodec<DynamicPlushieBlock> CODEC = simpleCodec(DynamicPlushieBlock::new);
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
+
+    *///?}
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     private static final VoxelShape HEAD = Block.box(6.0, 6.0, 6.0, 10.0, 10.0, 10.0);
     private static final VoxelShape TORSO = Block.box(6.0, 0.0, 7.0, 10.0, 6.0, 9.0);
 
     private static final VoxelShape SHAPE_NORTH = Shapes.or(
-            HEAD,
-            TORSO,
-            Block.box(5.0, 0.0, 2.0, 11.0, 2.0, 7.0),  // Legs sticking North
-            Block.box(3.5, 1.0, 6.5, 12.5, 5.0, 9.0)   // Splayed Arms
+            HEAD, TORSO,
+            Block.box(5.0, 0.0, 2.0, 11.0, 2.0, 7.0),
+            Block.box(3.5, 1.0, 6.5, 12.5, 5.0, 9.0)
     );
 
     private static final VoxelShape SHAPE_SOUTH = Shapes.or(
-            HEAD,
-            TORSO,
-            Block.box(5.0, 0.0, 9.0, 11.0, 2.0, 14.0), // Legs sticking South
-            Block.box(3.5, 1.0, 7.0, 12.5, 5.0, 9.5)   // Splayed Arms
+            HEAD, TORSO,
+            Block.box(5.0, 0.0, 9.0, 11.0, 2.0, 14.0),
+            Block.box(3.5, 1.0, 7.0, 12.5, 5.0, 9.5)
     );
 
     private static final VoxelShape SHAPE_EAST = Shapes.or(
             HEAD,
-            Block.box(7.0, 0.0, 6.0, 9.0, 6.0, 10.0),  // Rotated Torso
-            Block.box(9.0, 0.0, 5.0, 14.0, 2.0, 11.0), // Legs sticking East
-            Block.box(7.0, 1.0, 3.5, 9.5, 5.0, 12.5)   // Splayed Arms
+            Block.box(7.0, 0.0, 6.0, 9.0, 6.0, 10.0),
+            Block.box(9.0, 0.0, 5.0, 14.0, 2.0, 11.0),
+            Block.box(7.0, 1.0, 3.5, 9.5, 5.0, 12.5)
     );
 
     private static final VoxelShape SHAPE_WEST = Shapes.or(
             HEAD,
-            Block.box(7.0, 0.0, 6.0, 9.0, 6.0, 10.0),  // Rotated Torso
-            Block.box(2.0, 0.0, 5.0, 7.0, 2.0, 11.0),  // Legs sticking West
-            Block.box(6.5, 1.0, 3.5, 9.0, 5.0, 12.5)   // Splayed Arms
+            Block.box(7.0, 0.0, 6.0, 9.0, 6.0, 10.0),
+            Block.box(2.0, 0.0, 5.0, 7.0, 2.0, 11.0),
+            Block.box(6.5, 1.0, 3.5, 9.0, 5.0, 12.5)
     );
 
     public DynamicPlushieBlock(Properties properties) {
@@ -62,13 +72,6 @@ public class DynamicPlushieBlock extends BaseEntityBlock {
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        if (level.getBlockEntity(pos) instanceof DynamicPlushieBlockEntity plushie) {
-            com.mojang.authlib.GameProfile owner = plushie.getOwner();
-            if ((owner == null || !owner.getProperties().containsKey("textures")) && !plushie.isSafeToForceRender()) {
-                return Shapes.empty();
-            }
-        }
-
         return switch (state.getValue(FACING)) {
             case SOUTH -> SHAPE_SOUTH;
             case EAST -> SHAPE_EAST;
@@ -103,7 +106,7 @@ public class DynamicPlushieBlock extends BaseEntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (!level.isClientSide) {
-            return createTickerHelper(type, DynamicPlushieBlockEntity.TYPE, DynamicPlushieBlockEntity::serverTick);
+            return createTickerHelper(type, PlushieFriends.PLUSHIE_BLOCK_ENTITY, DynamicPlushieBlockEntity::serverTick);
         }
         return null;
     }
