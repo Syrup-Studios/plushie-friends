@@ -5,7 +5,7 @@ plugins {
 
 val minecraftVersion = property("deps.minecraft") as String
 
-version = "${property("mod.version")}+$minecraftVersion"
+version = "${property("mod.version")}+$minecraftVersion-fabric"
 base.archivesName = property("mod.id") as String
 
 val targetJavaVersion = if (stonecutter.eval(stonecutter.current.version, ">=1.20.5")) 21 else 17
