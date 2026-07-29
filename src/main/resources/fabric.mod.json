@@ -17,10 +17,10 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"net.syrupstudios.plushiefriends.PlushieFriends"
+			"net.syrupstudios.plushiefriends.loaders.fabric.FabricEntrypoint"
 		],
 		"client": [
-			"net.syrupstudios.plushiefriends.client.PlushieFriendsClient"
+			"net.syrupstudios.plushiefriends.loaders.fabric.FabricEntrypoint"
 		]
 	},
 	"mixins": [
