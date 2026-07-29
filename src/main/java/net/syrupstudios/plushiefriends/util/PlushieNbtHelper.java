@@ -6,9 +6,16 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
+//? if >=1.21
+/*import net.minecraft.core.UUIDUtil;*/
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+
+//? if >=1.21 {
+/*import net.minecraft.nbt.NbtOps;
+import net.minecraft.world.item.component.ResolvableProfile;
+*///?}
 
 public final class PlushieNbtHelper {
     /** Transitional alias for the legacy item container. */
@@ -16,6 +23,7 @@ public final class PlushieNbtHelper {
     public static final String PLUSHIE_OWNER = PlushieDataContract.OWNER;
     public static final String PLUSHIE_LORE = PlushieDataContract.LORE;
     public static final String PROFILE_NAME = "Name";
+    public static final String PROFILE_NAME_1_21 = "name";
 
     public static final int TAG_STRING = 8;
     public static final int TAG_LIST = 9;
@@ -42,10 +50,20 @@ public final class PlushieNbtHelper {
         if (blockEntityTag == null) return null;
 
         if (blockEntityTag.contains(PLUSHIE_OWNER, TAG_COMPOUND)) {
+            //? if >=1.21 {
+            /*return ResolvableProfile.CODEC
+                    .parse(NbtOps.INSTANCE, blockEntityTag.getCompound(PLUSHIE_OWNER))
+                    .result()
+                    .map(ResolvableProfile::gameProfile)
+                    .orElse(null);
+            *///?} else
             return NbtUtils.readGameProfile(blockEntityTag.getCompound(PLUSHIE_OWNER));
         } else if (blockEntityTag.contains(PLUSHIE_OWNER, TAG_STRING)) {
             String name = blockEntityTag.getString(PLUSHIE_OWNER);
             if (!name.isEmpty()) {
+                //? if >=1.21 {
+                /*return UUIDUtil.createOfflineProfile(name);
+                *///?} else
                 return new GameProfile(null, name);
             }
         }
@@ -59,6 +77,9 @@ public final class PlushieNbtHelper {
             CompoundTag ownerTag = blockEntityTag.getCompound(PLUSHIE_OWNER);
             if (ownerTag.contains(PROFILE_NAME, TAG_STRING)) {
                 return ownerTag.getString(PROFILE_NAME);
+            }
+            if (ownerTag.contains(PROFILE_NAME_1_21, TAG_STRING)) {
+                return ownerTag.getString(PROFILE_NAME_1_21);
             }
         } else if (blockEntityTag.contains(PLUSHIE_OWNER, TAG_STRING)) {
             return blockEntityTag.getString(PLUSHIE_OWNER);
@@ -145,9 +166,16 @@ public final class PlushieNbtHelper {
 
     public static void writeOwnerToBlockEntityTag(CompoundTag blockEntityTag, GameProfile profile) {
         if (blockEntityTag == null || profile == null) return;
+        //? if >=1.21 {
+        /*ResolvableProfile.CODEC
+                .encodeStart(NbtOps.INSTANCE, new ResolvableProfile(profile))
+                .result()
+                .ifPresent(tag -> blockEntityTag.put(PLUSHIE_OWNER, tag));
+        *///?} else {
         CompoundTag profileTag = new CompoundTag();
         NbtUtils.writeGameProfile(profileTag, profile);
         blockEntityTag.put(PLUSHIE_OWNER, profileTag);
+        //?}
     }
 
     public static void writeOwnerStringToBlockEntityTag(CompoundTag blockEntityTag, String ownerName) {

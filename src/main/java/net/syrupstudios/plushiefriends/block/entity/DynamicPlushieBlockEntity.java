@@ -2,13 +2,14 @@ package net.syrupstudios.plushiefriends.block.entity;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.core.BlockPos;
+//? if >=1.21
+/*import net.minecraft.core.HolderLookup;*/
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.syrupstudios.plushiefriends.util.PlushieNbtHelper;
 import net.syrupstudios.plushiefriends.util.PlushieProfileManager;
@@ -17,8 +18,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class DynamicPlushieBlockEntity extends BlockEntity {
-    public static BlockEntityType<DynamicPlushieBlockEntity> TYPE;
-
     private GameProfile owner = null;
     private ListTag lore = new ListTag();
     private boolean isResolving = false;
@@ -29,7 +28,7 @@ public class DynamicPlushieBlockEntity extends BlockEntity {
     }
 
     public DynamicPlushieBlockEntity(BlockPos pos, BlockState state) {
-        super(TYPE, pos, state);
+        super(net.syrupstudios.plushiefriends.PlushieFriends.PLUSHIE_BLOCK_ENTITY, pos, state);
     }
 
     public void setOwner(@Nullable GameProfile profile) {
@@ -64,9 +63,21 @@ public class DynamicPlushieBlockEntity extends BlockEntity {
         return updated;
     }
 
+    //? if >=1.21 {
+    /*@Override
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        loadPlushieData(tag);
+    }
+    *///?} else {
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
+        loadPlushieData(tag);
+    }
+    //?}
+
+    private void loadPlushieData(CompoundTag tag) {
         this.owner = PlushieNbtHelper.getOwnerFromBlockEntityTag(tag);
 
         if (tag.contains(PlushieNbtHelper.PLUSHIE_LORE, PlushieNbtHelper.TAG_LIST)) {
@@ -76,9 +87,21 @@ public class DynamicPlushieBlockEntity extends BlockEntity {
         }
     }
 
+    //? if >=1.21 {
+    /*@Override
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        savePlushieData(tag);
+    }
+    *///?} else {
     @Override
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
+        savePlushieData(tag);
+    }
+    //?}
+
+    private void savePlushieData(CompoundTag tag) {
         if (this.owner != null) {
             PlushieNbtHelper.writeOwnerToBlockEntityTag(tag, this.owner);
         }
@@ -92,10 +115,17 @@ public class DynamicPlushieBlockEntity extends BlockEntity {
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
+    //? if >=1.21 {
+    /*@Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return this.saveWithoutMetadata(registries);
+    }
+    *///?} else {
     @Override
     public CompoundTag getUpdateTag() {
         return this.saveWithoutMetadata();
     }
+    //?}
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, DynamicPlushieBlockEntity blockEntity) {
         if (blockEntity.owner == null || blockEntity.owner.getProperties().containsKey("textures")) {

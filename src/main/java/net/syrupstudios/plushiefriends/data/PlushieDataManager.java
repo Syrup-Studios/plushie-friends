@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+//? if fabric
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -18,7 +19,10 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlushieDataManager extends SimpleJsonResourceReloadListener implements IdentifiableResourceReloadListener {
+public class PlushieDataManager extends SimpleJsonResourceReloadListener
+        //? if fabric
+        implements IdentifiableResourceReloadListener
+{
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     private static final Map<ResourceLocation, PlushieDefinition> PLUSHIES = new HashMap<>();
 
@@ -48,10 +52,12 @@ public class PlushieDataManager extends SimpleJsonResourceReloadListener impleme
         });
     }
 
+    //? if fabric {
     @Override
     public ResourceLocation getFabricId() {
-        return new ResourceLocation(PlushieFriends.MOD_ID, "plushies");
+        return PlushieFriends.id("plushies");
     }
+    //?}
 
     public static PlushieDefinition get(ResourceLocation id) {
         return PLUSHIES.get(id);

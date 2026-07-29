@@ -77,6 +77,12 @@ tasks {
 
         val mixinJava = "JAVA_$targetJavaVersion"
         filesMatching("*.mixins.json") { expand("java" to mixinJava) }
+        exclude("META-INF/neoforge.mods.toml", "META-INF/mods.toml")
+        if (stonecutter.eval(stonecutter.current.version, ">=1.21")) {
+            exclude("data/*/loot_tables/**")
+        } else {
+            exclude("data/*/loot_table/**")
+        }
     }
 
     // Builds the version into a shared folder in `build/libs/${mod version}/`

@@ -87,6 +87,20 @@ public class PlushieModel {
     }
 
     public void render(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, boolean isSlim) {
+        //? if >=1.21 {
+        /*this.head.render(poseStack, vertexConsumer, packedLight, packedOverlay);
+        this.body.render(poseStack, vertexConsumer, packedLight, packedOverlay);
+        this.rightLeg.render(poseStack, vertexConsumer, packedLight, packedOverlay);
+        this.leftLeg.render(poseStack, vertexConsumer, packedLight, packedOverlay);
+
+        if (isSlim) {
+            this.slimRightArm.render(poseStack, vertexConsumer, packedLight, packedOverlay);
+            this.slimLeftArm.render(poseStack, vertexConsumer, packedLight, packedOverlay);
+        } else {
+            this.classicRightArm.render(poseStack, vertexConsumer, packedLight, packedOverlay);
+            this.classicLeftArm.render(poseStack, vertexConsumer, packedLight, packedOverlay);
+        }
+        *///?} else {
         this.head.render(poseStack, vertexConsumer, packedLight, packedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
         this.body.render(poseStack, vertexConsumer, packedLight, packedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
         this.rightLeg.render(poseStack, vertexConsumer, packedLight, packedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
@@ -99,5 +113,6 @@ public class PlushieModel {
             this.classicRightArm.render(poseStack, vertexConsumer, packedLight, packedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
             this.classicLeftArm.render(poseStack, vertexConsumer, packedLight, packedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
         }
+        //?}
     }
 }

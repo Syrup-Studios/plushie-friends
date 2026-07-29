@@ -1,5 +1,7 @@
 package net.syrupstudios.plushiefriends.block;
 
+//? if >=1.21
+/*import com.mojang.serialization.MapCodec;*/
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -19,9 +21,19 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.syrupstudios.plushiefriends.block.entity.DynamicPlushieBlockEntity;
+import net.syrupstudios.plushiefriends.PlushieFriends;
 import org.jetbrains.annotations.Nullable;
 
 public class DynamicPlushieBlock extends BaseEntityBlock {
+    //? if >=1.21 {
+    /*public static final MapCodec<DynamicPlushieBlock> CODEC = simpleCodec(DynamicPlushieBlock::new);
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
+
+    *///?}
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     private static final VoxelShape HEAD = Block.box(6.0, 6.0, 6.0, 10.0, 10.0, 10.0);
@@ -94,7 +106,7 @@ public class DynamicPlushieBlock extends BaseEntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (!level.isClientSide) {
-            return createTickerHelper(type, DynamicPlushieBlockEntity.TYPE, DynamicPlushieBlockEntity::serverTick);
+            return createTickerHelper(type, PlushieFriends.PLUSHIE_BLOCK_ENTITY, DynamicPlushieBlockEntity::serverTick);
         }
         return null;
     }

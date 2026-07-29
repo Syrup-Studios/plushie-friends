@@ -56,7 +56,12 @@ public final class PlushieProfileManager {
 
         long generation = CACHE_GENERATION.get();
         try {
+            //? if >=1.21 {
+            /*SkullBlockEntity.fetchGameProfile(normalizedName).whenComplete((optionalProfile, error) -> {
+                GameProfile profile = error == null ? optionalProfile.orElse(null) : null;
+            *///?} else {
             SkullBlockEntity.updateGameprofile(new GameProfile(null, normalizedName), profile -> {
+            //?}
                 GameProfile resolved = hasTextures(profile) ? profile : null;
                 if (CACHE_GENERATION.get() == generation) {
                     if (resolved != null) {
@@ -91,6 +96,10 @@ public final class PlushieProfileManager {
             return profile;
         }
 
+        //? if >=1.21 {
+        /*resolveProfileAsync(normalizedName, ignored -> {});
+        return null;
+        *///?} else {
         try {
             profile = server.getProfileCache().get(normalizedName)
                     .map(cachedProfile -> server.getSessionService().fillProfileProperties(cachedProfile, true))
@@ -106,6 +115,7 @@ public final class PlushieProfileManager {
             recordFailure(cacheKey);
         }
         return profile;
+        //?}
     }
 
     public static boolean shouldAttemptResolution(String ownerName) {
@@ -129,7 +139,7 @@ public final class PlushieProfileManager {
 
     private static void cacheModelType(GameProfile profile) {
         for (Property property : profile.getProperties().get("textures")) {
-            getOrCacheIsSlim(property.getValue());
+            getOrCacheIsSlim(propertyValue(property));
         }
     }
 
@@ -149,6 +159,13 @@ public final class PlushieProfileManager {
         } catch (RuntimeException error) {
             return false;
         }
+    }
+
+    public static String propertyValue(Property property) {
+        //? if >=1.21 {
+        /*return property.value();
+        *///?} else
+        return property.getValue();
     }
 
     public static void clearCache() {
