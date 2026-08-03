@@ -1,16 +1,9 @@
 {
-  "variants": {
-    "facing=north": {
-      "model": "plushie_friends:block/plushie"
-    },
-    "facing=east": {
-      "model": "plushie_friends:block/plushie"
-    },
-    "facing=south": {
-      "model": "plushie_friends:block/plushie"
-    },
-    "facing=west": {
-      "model": "plushie_friends:block/plushie"
+  "multipart": [
+    {
+      "apply": {
+        "model": "plushie_friends:block/plushie"
+      }
     }
-  }
+  ]
 }

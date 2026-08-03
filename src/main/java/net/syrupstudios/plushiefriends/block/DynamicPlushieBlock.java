@@ -9,7 +9,9 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -17,6 +19,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.block.state.properties.RotationSegment;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -34,6 +38,8 @@ public class DynamicPlushieBlock extends BaseEntityBlock {
     }
 
     *///?}
+    private static final int ROTATION_COUNT = RotationSegment.getMaxSegmentIndex() + 1;
+    public static final IntegerProperty ROTATION = BlockStateProperties.ROTATION_16;
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     private static final VoxelShape HEAD = Block.box(6.0, 6.0, 6.0, 10.0, 10.0, 10.0);
@@ -67,28 +73,55 @@ public class DynamicPlushieBlock extends BaseEntityBlock {
 
     public DynamicPlushieBlock(Properties properties) {
         super(properties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
+        this.registerDefaultState(this.stateDefinition.any()
+                .setValue(ROTATION, 0)
+                .setValue(FACING, Direction.NORTH));
     }
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return switch (state.getValue(FACING)) {
-            case SOUTH -> SHAPE_SOUTH;
-            case EAST -> SHAPE_EAST;
-            case WEST -> SHAPE_WEST;
+        int rotation = getRotation(state);
+        return switch ((rotation + 2) / 4 % 4) {
+            case 1 -> SHAPE_EAST;
+            case 2 -> SHAPE_SOUTH;
+            case 3 -> SHAPE_WEST;
             default -> SHAPE_NORTH;
         };
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING);
+        builder.add(ROTATION, FACING);
     }
 
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+        return this.defaultBlockState()
+                .setValue(ROTATION, RotationSegment.convertToSegment(context.getRotation()))
+                .setValue(FACING, context.getHorizontalDirection().getOpposite());
+    }
+
+    @Override
+    public BlockState rotate(BlockState state, Rotation rotation) {
+        return state
+                .setValue(ROTATION, rotation.rotate(state.getValue(ROTATION), ROTATION_COUNT))
+                .setValue(FACING, rotation.rotate(state.getValue(FACING)));
+    }
+
+    @Override
+    public BlockState mirror(BlockState state, Mirror mirror) {
+        return state
+                .setValue(ROTATION, mirror.mirror(state.getValue(ROTATION), ROTATION_COUNT))
+                .setValue(FACING, mirror.mirror(state.getValue(FACING)));
+    }
+
+    public static int getRotation(BlockState state) {
+        int rotation = state.hasProperty(ROTATION) ? state.getValue(ROTATION) : 0;
+        if (rotation == 0 && state.hasProperty(FACING)) {
+            return RotationSegment.convertToSegment(state.getValue(FACING));
+        }
+        return rotation;
     }
 
     @Override

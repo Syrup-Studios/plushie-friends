@@ -9,9 +9,9 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.RotationSegment;
 import net.syrupstudios.plushiefriends.PlushieFriends;
 import net.syrupstudios.plushiefriends.block.DynamicPlushieBlock;
 import net.syrupstudios.plushiefriends.block.entity.DynamicPlushieBlockEntity;
@@ -34,13 +34,13 @@ public class DynamicPlushieBlockEntityRenderer implements BlockEntityRenderer<Dy
         if ((owner == null || !owner.getProperties().containsKey("textures")) && !blockEntity.isSafeToForceRender()) return;
 
         BlockState state = blockEntity.getBlockState();
-        Direction facing = state.hasProperty(DynamicPlushieBlock.FACING) ? state.getValue(DynamicPlushieBlock.FACING) : Direction.NORTH;
+        int rotation = DynamicPlushieBlock.getRotation(state);
 
         poseStack.pushPose();
 
         poseStack.translate(0.5D, 0.0D, 0.5D);
 
-        float rotationAngle = -facing.toYRot() + 180.0F;
+        float rotationAngle = -RotationSegment.convertToDegrees(rotation);
         poseStack.mulPose(Axis.YP.rotationDegrees(rotationAngle));
 
         poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
