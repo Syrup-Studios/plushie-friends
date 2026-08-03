@@ -119,7 +119,7 @@ public class DynamicPlushieBlock extends BaseEntityBlock {
     public static int getRotation(BlockState state) {
         int rotation = state.hasProperty(ROTATION) ? state.getValue(ROTATION) : 0;
         if (rotation == 0 && state.hasProperty(FACING)) {
-            return RotationSegment.convertToSegment(state.getValue(FACING));
+            return RotationSegment.convertToSegment(state.getValue(FACING).getOpposite());
         }
         return rotation;
     }
