@@ -28,7 +28,7 @@
 	],
 	"depends": {
 		"fabricloader": ">=${fl}",
-		"minecraft": ">=${mc}",
+		"minecraft": "${mc}",
 		"fabric-api": ">=${fapi}"
 	}
 }
