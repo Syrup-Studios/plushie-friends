@@ -1,3 +1,7 @@
 {
-  "parent": "builtin/entity"
+  "parent": "minecraft:item/template_skull",
+  "gui_light": "front",
+  "textures": {
+    "particle": "minecraft:block/white_wool"
+  }
 }

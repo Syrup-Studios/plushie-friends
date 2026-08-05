@@ -89,7 +89,7 @@ public final class PlushieFriendsClient
         PlushieProfileCache.Skin skin = PlushieProfileCache.getSkin(owner);
         poseStack.pushPose();
         poseStack.translate(0.5D, 0.0D, 0.5D);
-        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+        poseStack.mulPose(Axis.YP.rotationDegrees(112.5F));
         poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
         poseStack.scale(0.5F, 0.5F, 0.5F);
 
