@@ -19,6 +19,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.syrupstudios.plushiefriends.PlushieFriends;
 import net.syrupstudios.plushiefriends.client.renderer.DynamicPlushieBlockEntityRenderer;
@@ -49,7 +50,7 @@ public final class PlushieFriendsClient
         BuiltinItemRendererRegistry.INSTANCE.register(
                 PlushieFriends.PLUSHIE_ITEM,
                 (stack, displayContext, poseStack, buffers, light, overlay) ->
-                        renderItem(stack, poseStack, buffers, light, overlay)
+                        renderItem(stack, displayContext, poseStack, buffers, light, overlay)
         );
     }
     //?} else if neoforge {
@@ -68,7 +69,12 @@ public final class PlushieFriendsClient
     *///?}
 
     public static void renderItem(
-            ItemStack stack, PoseStack poseStack, MultiBufferSource buffers, int light, int overlay
+            ItemStack stack,
+            ItemDisplayContext displayContext,
+            PoseStack poseStack,
+            MultiBufferSource buffers,
+            int light,
+            int overlay
     ) {
         if (itemModel == null) {
             itemModel = new PlushieModel(
@@ -87,9 +93,12 @@ public final class PlushieFriendsClient
         }
 
         PlushieProfileCache.Skin skin = PlushieProfileCache.getSkin(owner);
+        boolean leftHandView = displayContext == ItemDisplayContext.FIRST_PERSON_LEFT_HAND
+                || displayContext == ItemDisplayContext.THIRD_PERSON_LEFT_HAND;
+
         poseStack.pushPose();
         poseStack.translate(0.5D, 0.0D, 0.5D);
-        poseStack.mulPose(Axis.YP.rotationDegrees(112.5F));
+        poseStack.mulPose(Axis.YP.rotationDegrees(leftHandView ? -112.5F : 112.5F));
         poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
         poseStack.scale(0.5F, 0.5F, 0.5F);
 

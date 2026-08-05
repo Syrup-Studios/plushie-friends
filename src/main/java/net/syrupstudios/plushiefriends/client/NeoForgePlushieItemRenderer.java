@@ -25,7 +25,7 @@ public final class NeoForgePlushieItemRenderer extends BlockEntityWithoutLevelRe
             int light,
             int overlay
     ) {
-        PlushieFriendsClient.renderItem(stack, poseStack, buffers, light, overlay);
+        PlushieFriendsClient.renderItem(stack, displayContext, poseStack, buffers, light, overlay);
     }
 }
 *///?}
