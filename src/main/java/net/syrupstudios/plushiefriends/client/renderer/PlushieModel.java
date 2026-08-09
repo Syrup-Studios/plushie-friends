@@ -51,25 +51,25 @@ public class PlushieModel {
                 CubeListBuilder.create()
                         .texOffs(40, 16).addBox(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F)
                         .texOffs(40, 32).addBox(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, new CubeDeformation(0.2F)),
-                PartPose.offsetAndRotation(-5.0F, -11.0F, 0.0F, 0.0F, 0.0F, 0.25F));
+                PartPose.offsetAndRotation(-5.0F, -11.0F, 0.25F, 0.0F, 0.0F, 0.25F));
 
         partDefinition.addOrReplaceChild("classic_left_arm",
                 CubeListBuilder.create()
                         .texOffs(32, 48).addBox(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F)
                         .texOffs(48, 48).addBox(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, new CubeDeformation(0.2F)),
-                PartPose.offsetAndRotation(5.0F, -11.0F, 0.0F, 0.0F, 0.0F, -0.25F));
+                PartPose.offsetAndRotation(5.0F, -11.0F, 0.25F, 0.0F, 0.0F, -0.25F));
 
         partDefinition.addOrReplaceChild("slim_right_arm",
                 CubeListBuilder.create()
                         .texOffs(40, 16).addBox(-2.0F, 0.0F, -2.0F, 3.0F, 12.0F, 4.0F)
                         .texOffs(40, 32).addBox(-2.0F, 0.0F, -2.0F, 3.0F, 12.0F, 4.0F, new CubeDeformation(0.2F)),
-                PartPose.offsetAndRotation(-4.5F, -11.0F, 0.0F, 0.0F, 0.0F, 0.25F));
+                PartPose.offsetAndRotation(-4.5F, -11.0F, 0.25F, 0.0F, 0.0F, 0.25F));
 
         partDefinition.addOrReplaceChild("slim_left_arm",
                 CubeListBuilder.create()
                         .texOffs(32, 48).addBox(-1.0F, 0.0F, -2.0F, 3.0F, 12.0F, 4.0F)
                         .texOffs(48, 48).addBox(-1.0F, 0.0F, -2.0F, 3.0F, 12.0F, 4.0F, new CubeDeformation(0.2F)),
-                PartPose.offsetAndRotation(4.5F, -11.0F, 0.0F, 0.0F, 0.0F, -0.25F));
+                PartPose.offsetAndRotation(4.5F, -11.0F, 0.25F, 0.0F, 0.0F, -0.25F));
 
         partDefinition.addOrReplaceChild("right_leg",
                 CubeListBuilder.create()
