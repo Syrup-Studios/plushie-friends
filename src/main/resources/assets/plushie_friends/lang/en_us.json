@@ -1,4 +1,5 @@
 {
   "block.plushie_friends.plushie": "Plushie",
-  "item.plushie_friends.plushie": "Plushie"
+  "item.plushie_friends.plushie": "Plushie",
+  "item.plushie_friends.plushie.named": "%s's Plushie"
 }

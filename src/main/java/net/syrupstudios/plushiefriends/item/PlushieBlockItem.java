@@ -39,6 +39,15 @@ public final class PlushieBlockItem extends BlockItem {
         super(block, properties);
     }
 
+    @Override
+    public Component getName(ItemStack stack) {
+        String ownerName = PlushieNbtHelper.getOwnerNameFromRoot(PlushieItemData.read(stack));
+        if (!ownerName.isEmpty()) {
+            return Component.translatable("item.plushie_friends.plushie.named", ownerName);
+        }
+        return super.getName(stack);
+    }
+
     //? if >=1.21 {
     /*@Override
     public void verifyComponentsAfterLoad(ItemStack stack) {
@@ -121,10 +130,6 @@ public final class PlushieBlockItem extends BlockItem {
 
     private static void appendPlushieTooltip(ItemStack stack, List<Component> tooltip) {
         CompoundTag tag = PlushieItemData.read(stack);
-        String ownerName = PlushieNbtHelper.getOwnerNameFromRoot(tag);
-        if (!ownerName.isEmpty()) {
-            tooltip.add(Component.literal(ownerName).withStyle(ChatFormatting.AQUA));
-        }
         for (String line : PlushieNbtHelper.getLoreFromRoot(tag)) {
             tooltip.add(Component.literal(line).withStyle(ChatFormatting.GRAY));
         }

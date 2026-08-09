@@ -2,6 +2,7 @@ package net.syrupstudios.plushiefriends;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -46,7 +47,7 @@ public final class PlushieFriends {
         if (PLUSHIE_ITEM == null) {
             PLUSHIE_ITEM = new PlushieBlockItem(
                     createPlushieBlock(),
-                    new net.minecraft.world.item.Item.Properties().stacksTo(1)
+                    new net.minecraft.world.item.Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)
             );
         }
         return PLUSHIE_ITEM;
