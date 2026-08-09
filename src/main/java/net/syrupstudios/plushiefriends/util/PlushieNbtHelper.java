@@ -13,8 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 //? if >=1.21 {
-/*import net.minecraft.nbt.NbtOps;
+/*import com.mojang.authlib.properties.Property;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.world.item.component.ResolvableProfile;
+import java.util.UUID;
 *///?}
 
 public final class PlushieNbtHelper {
@@ -51,8 +53,14 @@ public final class PlushieNbtHelper {
 
         if (blockEntityTag.contains(PLUSHIE_OWNER, TAG_COMPOUND)) {
             //? if >=1.21 {
-            /*return ResolvableProfile.CODEC
-                    .parse(NbtOps.INSTANCE, blockEntityTag.getCompound(PLUSHIE_OWNER))
+            /*CompoundTag ownerTag = blockEntityTag.getCompound(PLUSHIE_OWNER);
+            if (ownerTag.contains(PROFILE_NAME)
+                    || ownerTag.contains("Id")
+                    || ownerTag.contains("Properties")) {
+                return readLegacyGameProfile(ownerTag);
+            }
+            return ResolvableProfile.CODEC
+                    .parse(NbtOps.INSTANCE, ownerTag)
                     .result()
                     .map(ResolvableProfile::gameProfile)
                     .orElse(null);
@@ -69,6 +77,41 @@ public final class PlushieNbtHelper {
         }
         return null;
     }
+
+    //? if >=1.21 {
+    /*// Reads the profile format written by Minecraft 1.20 and earlier.
+    @Nullable
+    private static GameProfile readLegacyGameProfile(CompoundTag profileTag) {
+        try {
+            String name = profileTag.contains(PROFILE_NAME, TAG_STRING)
+                    ? profileTag.getString(PROFILE_NAME)
+                    : null;
+            UUID id = profileTag.hasUUID("Id") ? profileTag.getUUID("Id") : null;
+            if ((name == null || name.isEmpty()) && id == null) {
+                return null;
+            }
+
+            GameProfile profile = new GameProfile(id, name);
+            if (profileTag.contains("Properties", TAG_COMPOUND)) {
+                CompoundTag propertiesTag = profileTag.getCompound("Properties");
+                for (String propertyName : propertiesTag.getAllKeys()) {
+                    ListTag properties = propertiesTag.getList(propertyName, TAG_COMPOUND);
+                    for (int i = 0; i < properties.size(); i++) {
+                        CompoundTag propertyTag = properties.getCompound(i);
+                        String value = propertyTag.getString("Value");
+                        Property property = propertyTag.contains("Signature", TAG_STRING)
+                                ? new Property(propertyName, value, propertyTag.getString("Signature"))
+                                : new Property(propertyName, value);
+                        profile.getProperties().put(propertyName, property);
+                    }
+                }
+            }
+            return profile;
+        } catch (RuntimeException exception) {
+            return null;
+        }
+    }
+    *///?}
 
     public static String getOwnerNameFromBlockEntityTag(CompoundTag blockEntityTag) {
         if (blockEntityTag == null || !blockEntityTag.contains(PLUSHIE_OWNER)) return "";
